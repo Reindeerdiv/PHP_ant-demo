@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PHP_ANT_Demo" default="composer" basedir=".">
+   <property name="pdepend" value="${basedir}/build/pdepend.phar"/>
+    <property name="phpcpd"  value="${basedir}/build/phpcpd.phar"/>
+    <property name="phpcs"   value="${basedir}/build/phpcs.phar"/>
+    <property name="phpdox"  value="${basedir}/build/phpdox.phar"/>
+    <property name="phploc"  value="${basedir}/build/phploc.phar"/>
+    <property name="phpmd"   value="${basedir}/build/phpmd.phar"/>
+    <property name="phpunit" value="${basedir}/build/phpunit.phar"/>
+    
+
+<target name="clean" unless="clean.done" description="Cleanup build artifacts.">
+        <delete dir="${basedir}/build/api"/>
+        <delete dir="${basedir}/build/coverage"/>
+        <delete dir="${basedir}/build/logs"/>
+        <delete dir="${basedir}/build/pdepend"/>
+        <delete dir="${basedir}/build/phpdox"/>
+        <property name="clean.done" value="true"/>
+    </target>
+
+  <target name="phpcs" unless="phpcs.done"
+            description="Find coding standard violations using PHP_CodeSniffer.">
+        <exec executable="${phpcs}" taskname="phpcs">
+            <arg value="--standard=PSR2"/>
+            <arg value="--extensions=php"/>
+            <arg value="--ignore=autoload.php"/>
+            <arg path="${basedir}/src"/>
+            <arg path="${basedir}/tests"/>
+        </exec>
+        <property name="phpcs.done" value="true"/>
+    </target>
+
+  <target name="phpdox" unless="phpdox.done" depends="phploc,phpcs"
+            description="Generate project documentation using phpDox.">
+        <exec executable="${phpdox}" dir="${basedir}/build" taskname="phpdox"/>
+        <property name="phpdox.done" value="true"/>
+    </target>
+
+  <target name="phploc" unless="phploc.done"
+            description="Measure project size using PHPLOC .">
+        <exec executable="${phploc}" taskname="phploc">
+            <arg value="--count-tests"/>
+            <arg path="${basedir}/src"/>
+            <arg path="${basedir}/tests"/>
+        </exec>
+        <property name="phploc.done" value="true"/>
+    </target>
+
+ <target name="prepare" unless="prepare.done" depends="clean" description="Prepare for build.">
+        <mkdir dir="${basedir}/build/api"/>
+        <mkdir dir="${basedir}/build/coverage"/>
+        <mkdir dir="${basedir}/build/logs"/>
+        <mkdir dir="${basedir}/build/pdepend"/>
+        <mkdir dir="${basedir}/build/phpdox"/>
+        <property name="prepare.done" value="true"/>
+    </target>
+</project>
